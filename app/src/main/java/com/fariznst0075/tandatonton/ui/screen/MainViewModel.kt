@@ -43,4 +43,8 @@ class MainViewModel : ViewModel() {
             "action"
         )
     )
+
+    fun getFilm(id: Long): Film? {
+        return data.find { it.id == id }
+    }
 }
