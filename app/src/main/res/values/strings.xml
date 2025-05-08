@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TandaTonton</string>
+    <string name="list_kosong">Belum ada data</string>
 </resources>
