@@ -6,4 +6,6 @@
     <string name="belum_bisa">Belum bisa tambah catatan.</string>
     <string name="judul">Judul</string>
     <string name="isi_catatan">Isi Catatan</string>
+    <string name="kembali">Kembali</string>
+    <string name="simpan">Simpan</string>
 </resources>
