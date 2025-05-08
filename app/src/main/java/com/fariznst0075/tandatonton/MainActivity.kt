@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.fariznst0075.tandatonton.ui.screen.MainScreen
+import com.fariznst0075.tandatonton.navigation.SetupNavGraph
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TandaTontonTheme {
-                MainScreen()
+                SetupNavGraph()
             }
         }
     }

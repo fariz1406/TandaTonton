@@ -1,6 +1,5 @@
 package com.fariznst0075.tandatonton.ui.screen
 
-
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.clickable
