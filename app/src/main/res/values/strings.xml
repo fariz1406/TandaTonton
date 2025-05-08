@@ -4,4 +4,6 @@
     <string name="x_diklik">%1$s diklik!</string>
     <string name="tambah_catatan">Tambah catatan</string>
     <string name="belum_bisa">Belum bisa tambah catatan.</string>
+    <string name="judul">Judul</string>
+    <string name="isi_catatan">Isi Catatan</string>
 </resources>
