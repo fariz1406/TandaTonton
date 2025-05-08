@@ -113,11 +113,16 @@ fun ListItem(film: Film, onClick: () -> Unit) {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = film.tanggal,
+            text = film.jenis,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = film.genre)
+        Text(
+            text = film.status,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(text = film.tanggal)
     }
 }
 

@@ -1,6 +1,8 @@
 package com.fariznst0075.tandatonton.ui.screen
 
+import android.app.DatePickerDialog
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +12,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -36,6 +43,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.fariznst0075.tandatonton.R
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
 
 const val KEY_ID_CATATAN = "idCatatan"
 
@@ -99,10 +110,39 @@ fun FormFilm(
     title: String, onTitleChange: (String) -> Unit,
     modifier: Modifier
 ) {
+    val jenisOptions = listOf("Film", "Series")
+    val statusOptions = listOf("Belum Ditonton", "Sedang Ditonton", "Selesai")
+
+    var selectedJenis by remember { mutableStateOf(jenisOptions.first()) }
+    var selectedStatus by remember { mutableStateOf(statusOptions.first()) }
+
+    // Tanggal
+    val context = LocalContext.current
+    val calendar = remember { Calendar.getInstance() }
+
+    var selectedDate by remember { mutableStateOf(calendar.time) }
+
+    val dateFormat = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) }
+    val formattedDate = remember(selectedDate) { dateFormat.format(selectedDate) }
+
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _, year, month, day ->
+                calendar.set(year, month, day)
+                selectedDate = calendar.time
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+    }
+
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Judul
         OutlinedTextField(
             value = title,
             onValueChange = { onTitleChange(it) },
@@ -114,8 +154,80 @@ fun FormFilm(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Jenis
+        ExposedDropdownMenuBoxSample(
+            label = "Jenis",
+            options = jenisOptions,
+            selectedOption = selectedJenis,
+            onOptionSelected = { selectedJenis = it }
+        )
+
+        // Status
+        ExposedDropdownMenuBoxSample(
+            label = "Status",
+            options = statusOptions,
+            selectedOption = selectedStatus,
+            onOptionSelected = { selectedStatus = it }
+        )
+
+        // Tanggal
+        OutlinedTextField(
+            value = formattedDate,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Tanggal Ditambahkan") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { datePickerDialog.show() }
+        )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExposedDropdownMenuBoxSample(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selectedOption,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        onOptionSelected(selectionOption)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)

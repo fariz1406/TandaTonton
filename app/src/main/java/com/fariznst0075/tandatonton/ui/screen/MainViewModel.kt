@@ -9,38 +9,50 @@ class MainViewModel : ViewModel() {
         Film(
             1,
             "Vinland Saga S1",
-            "2025-02-17 12:34:56",
-            "action"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         ),
         Film(
             2,
             "Prison School",
-            "2025-02-19 12:34:56",
-            "comedy"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         ),
         Film(
             3,
             "Prison School",
-            "2025-02-23 12:34:56",
-            "action"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         ),
         Film(
             4,
             "Prison School",
-            "2025-02-26 12:34:56",
-            "action"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         ),
         Film(
             5,
             "Prison School",
-            "2025-03-03 12:34:56",
-            "action"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         ),
         Film(
             6,
             "Vinland Saga S1",
-            "2025-03-05 12:34:56",
-            "action"
+            "series",
+            "selesai",
+            "2025-02-17 12:34:56"
+
         )
     )
 
