@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -122,7 +123,6 @@ fun MainScreen(navController: NavHostController) {
         val paddingValues = it
 
         Column(modifier = Modifier.padding(paddingValues)) {
-            // ⬇️ Dropdown Filter (RAPI)
             var expanded by remember { mutableStateOf(false) }
 
             ExposedDropdownMenuBox(
@@ -158,7 +158,6 @@ fun MainScreen(navController: NavHostController) {
                 }
             }
 
-            // ⬇️ ScreenContent ditampilkan di bawah filter
             ScreenContent(
                 modifier = Modifier.weight(1f),
                 navController = navController,
@@ -238,50 +237,98 @@ fun ListItem(film: Film, onClick: () -> Unit) {
     val tanggalFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     val tanggalString = tanggalFormat.format(Date(film.tanggal))
 
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onClick() },
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
-        Text(
-            text = film.judul,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = film.jenis,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = film.status,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(text = tanggalString)
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = film.judul,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = "Jenis: ${film.jenis}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Text(
+                text = "Status: ${film.status}",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = when (film.status) {
+                        "Belum Ditonton" -> MaterialTheme.colorScheme.primary
+                        "Sedang Ditonton" -> MaterialTheme.colorScheme.tertiary
+                        "Selesai" -> MaterialTheme.colorScheme.secondary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            )
+
+            Text(
+                text = "Ditambahkan: $tanggalString",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline
+            )
+        }
     }
 }
 
 @Composable
 fun GridItem(film: Film, onClick: () -> Unit) {
+    val tanggalString = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date(film.tanggal))
+
     Card(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(8.dp)
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick() },
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(text = film.judul, fontWeight = FontWeight.Bold)
-            Text(text = film.jenis)
-            Text(text = film.status)
             Text(
-                text = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date(film.tanggal))
+                text = film.judul,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = film.jenis,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = film.status,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = when (film.status) {
+                        "Belum Ditonton" -> MaterialTheme.colorScheme.primary
+                        "Sedang Ditonton" -> MaterialTheme.colorScheme.tertiary
+                        "Selesai" -> MaterialTheme.colorScheme.secondary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            )
+            Text(
+                text = tanggalString,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline
             )
         }
     }
