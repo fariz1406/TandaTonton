@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,7 +69,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     var judul by remember { mutableStateOf("") }
     var jenis by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
-    var tanggal by remember { mutableStateOf(System.currentTimeMillis()) }
+    var tanggal by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     LaunchedEffect(id) {
         if (id != null) {
@@ -186,11 +187,6 @@ fun FormFilm(
 )
 
  {
-    val jenisOptions = listOf("Film", "Series")
-    val statusOptions = listOf("Belum Ditonton", "Sedang Ditonton", "Selesai")
-
-    var selectedJenis by remember { mutableStateOf(jenisOptions.first()) }
-    var selectedStatus by remember { mutableStateOf(statusOptions.first()) }
 
 // Tanggal
      val context = LocalContext.current

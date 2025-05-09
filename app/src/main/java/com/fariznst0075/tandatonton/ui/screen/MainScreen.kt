@@ -16,12 +16,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,8 +33,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +68,9 @@ fun MainScreen(navController: NavHostController) {
     val context = LocalContext.current
     val settings = remember { SettingsDataStore(context) }
     val showList by settings.showListFlow.collectAsState(initial = true)
+    var selectedFilter by rememberSaveable { mutableStateOf("Semua") }
+    val filterOptions = listOf("Semua", "Film", "Series", "Belum Ditonton", "Sedang Ditonton", "Selesai")
+
 
     Scaffold(
         topBar = {
@@ -94,6 +104,7 @@ fun MainScreen(navController: NavHostController) {
                 }
             )
         },
+
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -107,27 +118,84 @@ fun MainScreen(navController: NavHostController) {
                 )
             }
         }
-    ) { innerPadding ->
-        ScreenContent(
-            modifier = Modifier.padding(innerPadding),
-            navController = navController,
-            showList = showList
-        )
+    ) {
+        val paddingValues = it
+
+        Column(modifier = Modifier.padding(paddingValues)) {
+            // ⬇️ Dropdown Filter (RAPI)
+            var expanded by remember { mutableStateOf(false) }
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = "Tampilkan: $selectedFilter",
+                    modifier = Modifier
+                        .menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.exposedDropdownSize()
+                ) {
+                    filterOptions.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                selectedFilter = option
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // ⬇️ ScreenContent ditampilkan di bawah filter
+            ScreenContent(
+                modifier = Modifier.weight(1f),
+                navController = navController,
+                showList = showList,
+                selectedFilter = selectedFilter
+            )
+        }
+
     }
 }
+
 
 @Composable
 fun ScreenContent(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    showList: Boolean
-) {
+    showList: Boolean,
+    selectedFilter: String
+)
+ {
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: MainViewModel = viewModel(factory = factory)
-    val data by viewModel.data.collectAsState()
+    val rawData by viewModel.data.collectAsState()
 
-    if (data.isEmpty()) {
+    val data = when (selectedFilter) {
+         "Film" -> rawData.filter { it.jenis == "Film" }
+         "Series" -> rawData.filter { it.jenis == "Series" }
+         "Belum Ditonton" -> rawData.filter { it.status == "Belum Ditonton" }
+         "Sedang Ditonton" -> rawData.filter { it.status == "Sedang Ditonton" }
+         "Selesai" -> rawData.filter { it.status == "Selesai" }
+         else -> rawData
+    }
+
+
+
+     if (data.isEmpty()) {
         Column(
             modifier = modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
