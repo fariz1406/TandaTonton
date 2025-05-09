@@ -1,62 +1,22 @@
 package com.fariznst0075.tandatonton.ui.screen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.fariznst0075.tandatonton.database.FilmDao
 import com.fariznst0075.tandatonton.model.Film
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
-class MainViewModel : ViewModel() {
+class MainViewModel(dao: FilmDao) : ViewModel() {
 
-    val data = listOf(
-        Film(
-            1,
-            "Vinland Saga S1",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        ),
-        Film(
-            2,
-            "Prison School",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        ),
-        Film(
-            3,
-            "Prison School",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        ),
-        Film(
-            4,
-            "Prison School",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        ),
-        Film(
-            5,
-            "Prison School",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        ),
-        Film(
-            6,
-            "Vinland Saga S1",
-            "series",
-            "selesai",
-            "2025-02-17 12:34:56"
-
-        )
+    val data: StateFlow<List<Film>> = dao.getFilm().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
     )
 
     fun getFilm(id: Long): Film? {
-        return data.find { it.id == id }
+        return data.value.find { it.id == id }
     }
 }

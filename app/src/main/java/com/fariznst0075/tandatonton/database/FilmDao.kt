@@ -17,5 +17,5 @@ interface FilmDao {
     suspend fun update(film: Film)
 
     @Query("SELECT * FROM film ORDER BY tanggal DESC")
-    fun getCatatan(): Flow<List<Film>>
+    fun getFilm(): Flow<List<Film>>
 }
