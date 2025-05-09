@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -43,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.fariznst0075.tandatonton.R
+import com.fariznst0075.tandatonton.model.Film
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
 import com.fariznst0075.tandatonton.util.ViewModelFactory
 import java.text.SimpleDateFormat
@@ -58,6 +61,8 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: DetailViewModel = viewModel(factory = factory)
+    var showMenu by remember { mutableStateOf(false) }
+
 
     var judul by remember { mutableStateOf("") }
     var jenis by remember { mutableStateOf("") }
@@ -118,6 +123,29 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
+                    if (id != null) {
+                        IconButton(onClick = { showMenu = !showMenu }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Menu",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Hapus") },
+                                    onClick = {
+                                        showMenu = false
+                                        viewModel.delete(Film(id, judul, jenis, status, tanggal))
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                 }
             )
         }

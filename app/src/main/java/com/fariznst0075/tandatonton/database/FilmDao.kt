@@ -1,6 +1,7 @@
 package com.fariznst0075.tandatonton.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -21,5 +22,9 @@ interface FilmDao {
 
     @Query("SELECT * FROM film WHERE id = :id")
     suspend fun getFilmById(id: Long): Film?
+
+    @Delete
+    suspend fun delete(film: Film)
+
 
 }

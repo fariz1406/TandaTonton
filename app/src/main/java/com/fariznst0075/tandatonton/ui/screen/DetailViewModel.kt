@@ -31,5 +31,12 @@ class DetailViewModel(private val dao: FilmDao) : ViewModel() {
         return dao.getFilmById(id)
     }
 
+    fun delete(film: Film) {
+        viewModelScope.launch {
+            dao.delete(film)
+        }
+    }
+
+
 
 }

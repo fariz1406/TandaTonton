@@ -10,4 +10,7 @@
     <string name="simpan">Simpan</string>
     <string name="edit_catatan">Ubah Catatan</string>
     <string name="invalid">Judul, Jenis, dan Status tonton tidak boleh kosong</string>
+    <string name="hapus">Hapus</string>
+    <string name="menu">Menu</string>
+
 </resources>
