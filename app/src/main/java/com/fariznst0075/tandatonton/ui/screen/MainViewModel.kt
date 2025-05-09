@@ -16,7 +16,4 @@ class MainViewModel(dao: FilmDao) : ViewModel() {
         initialValue = emptyList()
     )
 
-    fun getFilm(id: Long): Film? {
-        return data.value.find { it.id == id }
-    }
 }

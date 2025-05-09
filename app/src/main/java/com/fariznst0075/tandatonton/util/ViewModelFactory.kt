@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.fariznst0075.tandatonton.database.FilmDb
+import com.fariznst0075.tandatonton.ui.screen.DetailViewModel
 import com.fariznst0075.tandatonton.ui.screen.MainViewModel
 
 class ViewModelFactory (
@@ -14,6 +15,8 @@ class ViewModelFactory (
         val dao = FilmDb.getInstance(context).dao
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(dao) as T
+        } else if (modelClass.isAssignableFrom(DetailViewModel::class.java)){
+            return DetailViewModel(dao) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

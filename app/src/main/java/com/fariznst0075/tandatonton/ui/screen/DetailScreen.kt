@@ -2,6 +2,7 @@ package com.fariznst0075.tandatonton.ui.screen
 
 import android.app.DatePickerDialog
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,24 +44,36 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.fariznst0075.tandatonton.R
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
+import com.fariznst0075.tandatonton.util.ViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
-
 
 const val KEY_ID_CATATAN = "idCatatan"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
-    val viewModel: MainViewModel = viewModel()
+    val context = LocalContext.current
+    val factory = ViewModelFactory(context)
+    val viewModel: DetailViewModel = viewModel(factory = factory)
 
     var judul by remember { mutableStateOf("") }
+    var jenis by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf("") }
+    var tanggal by remember { mutableStateOf(System.currentTimeMillis()) }
 
-    LaunchedEffect(Unit) {
-        if (id == null) return@LaunchedEffect
-        val data = viewModel.getFilm(id) ?: return@LaunchedEffect
-        judul = data.judul
+    LaunchedEffect(id) {
+        if (id != null) {
+            val data = viewModel.getFilm(id)
+            if (data != null) {
+                judul = data.judul
+                jenis = data.jenis
+                status = data.status
+                tanggal = data.tanggal
+            }
+        }
     }
 
     Scaffold(
@@ -86,7 +99,19 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                 actions = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = {
+                        if (judul == "") {
+                            Toast.makeText(context, R.string.invalid, Toast.LENGTH_LONG).show()
+                            return@IconButton
+                        }
+
+                        if (id == null) {
+                            viewModel.insert(judul, jenis, status, tanggal)
+                        } else {
+                            viewModel.update(id, judul, jenis, status, tanggal)
+                        }
+
+                        navController.popBackStack()}) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
                             contentDescription = stringResource(R.string.simpan),
@@ -99,44 +124,57 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     ) { padding ->
         FormFilm(
             title = judul,
-            onTitleChange = {judul = it},
+            onTitleChange = { judul = it },
+            jenis = jenis,
+            onJenisChange = { jenis = it },
+            status = status,
+            onStatusChange = { status = it },
+            tanggal = tanggal,
+            onTanggalChange = { tanggal = it },
             modifier = Modifier.padding(padding)
         )
+
     }
 }
 
 @Composable
 fun FormFilm(
-    title: String, onTitleChange: (String) -> Unit,
+    title: String,
+    onTitleChange: (String) -> Unit,
+    jenis: String,
+    onJenisChange: (String) -> Unit,
+    status: String,
+    onStatusChange: (String) -> Unit,
+    tanggal: Long,
+    onTanggalChange: (Long) -> Unit,
     modifier: Modifier
-) {
+)
+ {
     val jenisOptions = listOf("Film", "Series")
     val statusOptions = listOf("Belum Ditonton", "Sedang Ditonton", "Selesai")
 
     var selectedJenis by remember { mutableStateOf(jenisOptions.first()) }
     var selectedStatus by remember { mutableStateOf(statusOptions.first()) }
 
-    // Tanggal
-    val context = LocalContext.current
-    val calendar = remember { Calendar.getInstance() }
+// Tanggal
+     val context = LocalContext.current
+     val calendar = remember { Calendar.getInstance().apply { timeInMillis = tanggal } }
 
-    var selectedDate by remember { mutableStateOf(calendar.time) }
+     val dateFormat = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) }
+     val formattedDate = remember(tanggal) { dateFormat.format(Date(tanggal)) }
 
-    val dateFormat = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) }
-    val formattedDate = remember(selectedDate) { dateFormat.format(selectedDate) }
-
-    val datePickerDialog = remember {
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                calendar.set(year, month, day)
-                selectedDate = calendar.time
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-    }
+     val datePickerDialog = remember {
+         DatePickerDialog(
+             context,
+             { _, year, month, day ->
+                 calendar.set(year, month, day)
+                 onTanggalChange(calendar.timeInMillis)
+             },
+             calendar.get(Calendar.YEAR),
+             calendar.get(Calendar.MONTH),
+             calendar.get(Calendar.DAY_OF_MONTH)
+         )
+     }
 
     Column(
         modifier = modifier.fillMaxSize().padding(16.dp),
@@ -155,23 +193,22 @@ fun FormFilm(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Jenis
+// Jenis
         ExposedDropdownMenuBoxSample(
             label = "Jenis",
-            options = jenisOptions,
-            selectedOption = selectedJenis,
-            onOptionSelected = { selectedJenis = it }
+            options = listOf("Film", "Series"),
+            selectedOption = jenis,
+            onOptionSelected = { onJenisChange(it) }
         )
 
-        // Status
+// Status
         ExposedDropdownMenuBoxSample(
             label = "Status",
-            options = statusOptions,
-            selectedOption = selectedStatus,
-            onOptionSelected = { selectedStatus = it }
+            options = listOf("Belum Ditonton", "Sedang Ditonton", "Selesai"),
+            selectedOption = status,
+            onOptionSelected = { onStatusChange(it) }
         )
-
-        // Tanggal
+//tanggal
         OutlinedTextField(
             value = formattedDate,
             onValueChange = {},

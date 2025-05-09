@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.fariznst0075.tandatonton.model.Film
 
-@Database(entities = [Film::class], version = 1, exportSchema = false)
+@Database(entities = [Film::class], version = 2, exportSchema = false)
 abstract class FilmDb : RoomDatabase() {
 
     abstract val dao: FilmDao
@@ -25,7 +25,8 @@ abstract class FilmDb : RoomDatabase() {
                         context.applicationContext,
                         FilmDb::class.java,
                         "film.db"
-                    ).build()
+                    ).fallbackToDestructiveMigration()
+                        .build()
                     INSTANCE = instance
                 }
                 return instance

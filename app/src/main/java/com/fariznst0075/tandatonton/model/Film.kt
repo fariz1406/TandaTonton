@@ -5,10 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "film")
 data class Film(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val judul: String,
     val jenis: String,
     val status: String,
-    val tanggal: String,
+    val tanggal: Long
 )

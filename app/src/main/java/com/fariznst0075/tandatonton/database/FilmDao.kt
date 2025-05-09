@@ -18,4 +18,8 @@ interface FilmDao {
 
     @Query("SELECT * FROM film ORDER BY tanggal DESC")
     fun getFilm(): Flow<List<Film>>
+
+    @Query("SELECT * FROM film WHERE id = :id")
+    suspend fun getFilmById(id: Long): Film?
+
 }

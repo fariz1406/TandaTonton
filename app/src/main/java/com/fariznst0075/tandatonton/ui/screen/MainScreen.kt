@@ -40,6 +40,9 @@ import com.fariznst0075.tandatonton.model.Film
 import com.fariznst0075.tandatonton.navigation.Screen
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
 import com.fariznst0075.tandatonton.util.ViewModelFactory
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,8 +85,6 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
     val viewModel: MainViewModel = viewModel(factory = factory)
     val data by viewModel.data.collectAsState()
 
-
-
     if (data.isEmpty()) {
         Column(
             modifier = modifier.fillMaxSize().padding(16.dp),
@@ -110,10 +111,16 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
 
 @Composable
 fun ListItem(film: Film, onClick: () -> Unit) {
+    val tanggalFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val tanggalString = tanggalFormat.format(Date(film.tanggal))
+
     Column(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    ) {
         Text(
             text = film.judul,
             maxLines = 1,
@@ -130,9 +137,10 @@ fun ListItem(film: Film, onClick: () -> Unit) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = film.tanggal)
+        Text(text = tanggalString)
     }
 }
+
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
