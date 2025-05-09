@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -26,9 +29,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,19 +47,20 @@ import com.fariznst0075.tandatonton.R
 import com.fariznst0075.tandatonton.model.Film
 import com.fariznst0075.tandatonton.navigation.Screen
 import com.fariznst0075.tandatonton.ui.theme.TandaTontonTheme
+import com.fariznst0075.tandatonton.util.SettingsDataStore
 import com.fariznst0075.tandatonton.util.ViewModelFactory
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var showList by rememberSaveable { mutableStateOf(true) }
+    val context = LocalContext.current
+    val settings = remember { SettingsDataStore(context) }
+    val showList by settings.showListFlow.collectAsState(initial = true)
 
     Scaffold(
         topBar = {
@@ -69,16 +72,25 @@ fun MainScreen(navController: NavHostController) {
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
-                actions = { IconButton(onClick = { showList = !showList }) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (showList) R.drawable.ic_view_grid else R.drawable.ic_view_list
-                        ),
-                        contentDescription = stringResource(
-                            if (showList) R.string.tampilan_grid else R.string.tampilan_list
+                actions = {
+                    val coroutineScope = rememberCoroutineScope()
+
+                    IconButton(onClick = {
+                        val newValue = !showList
+                        coroutineScope.launch {
+                            settings.saveLayout(newValue)
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (showList) R.drawable.ic_view_grid else R.drawable.ic_view_list
+                            ),
+                            contentDescription = stringResource(
+                                if (showList) R.string.tampilan_grid else R.string.tampilan_list
                             )
                         )
                     }
+
                 }
             )
         },

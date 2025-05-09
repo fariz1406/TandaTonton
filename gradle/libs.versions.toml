@@ -32,6 +32,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomRuntime"}
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomRuntime"}
 androidx-room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime"}
+datastore-preferences = "androidx.datastore:datastore-preferences:1.1.6"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
