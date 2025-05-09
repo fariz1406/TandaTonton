@@ -62,6 +62,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
     val factory = ViewModelFactory(context)
     val viewModel: DetailViewModel = viewModel(factory = factory)
     var showMenu by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
 
     var judul by remember { mutableStateOf("") }
@@ -137,9 +138,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                                 DropdownMenuItem(
                                     text = { Text("Hapus") },
                                     onClick = {
-                                        showMenu = false
-                                        viewModel.delete(Film(id, judul, jenis, status, tanggal))
-                                        navController.popBackStack()
+                                        showDeleteDialog = true
                                     }
                                 )
                             }
@@ -161,7 +160,15 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
             onTanggalChange = { tanggal = it },
             modifier = Modifier.padding(padding)
         )
-
+        DisplayAlertDialog(
+            openDialog = showDeleteDialog,
+            onDismissRequest = { showDeleteDialog = false },
+            onConfirmation = {
+                showDeleteDialog = false
+                viewModel.delete(Film(id = id!!, judul = judul, jenis = jenis, status = status, tanggal = tanggal))
+                navController.popBackStack()
+            }
+        )
     }
 }
 
@@ -177,6 +184,7 @@ fun FormFilm(
     onTanggalChange: (Long) -> Unit,
     modifier: Modifier
 )
+
  {
     val jenisOptions = listOf("Film", "Series")
     val statusOptions = listOf("Belum Ditonton", "Sedang Ditonton", "Selesai")
@@ -292,7 +300,6 @@ fun ExposedDropdownMenuBoxSample(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)

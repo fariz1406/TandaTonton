@@ -12,5 +12,8 @@
     <string name="invalid">Judul, Jenis, dan Status tonton tidak boleh kosong</string>
     <string name="hapus">Hapus</string>
     <string name="menu">Menu</string>
+    <string name="konfirmasi_hapus">Apakah kamu yakin ingin menghapus data ini?</string>
+    <string name="tampilan_list">Tampilan list</string>
+    <string name="tampilan_grid">Tampilan grid</string>
 
 </resources>
